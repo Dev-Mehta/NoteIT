@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block title %}
+    Home
+{% endblock title %}
+{% block content %}
+<style type="text/css">
+  .modal{
+    position: fixed;
+    top:auto;
+    bottom: 0;
+  }
+.footer {
+  bottom: 0;
+  width: 100%;
+  height: 60px; /* Set the fixed height of the footer here */
+  line-height: 60px; /* Vertically center the text there */
+  background-color: #f5f5f5;
+}
+
+
+/* Custom page CSS
+-------------------------------------------------- */
+/* Not required for template or sticky footer method. */
+
+.container {
+  width: auto;
+  max-width: 680px;
+  padding: 0 15px;
+}
+
+</style>
+<br/>
+	<h5>
+		<button data-toggle="modal" data-target="#exampleModal" class="btn btn-outline-primary">
+		<ion-icon name="alarm-outline" style="margin-bottom: -3px"></ion-icon> Schedule Task
+		</button>
+	</h5>
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">
+        	<ion-icon name="alarm-outline" style="margin-bottom: -3px"></ion-icon> Schedule Task
+        </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="POST">
+        	{% csrf_token %}
+        	{{ form|crispy }}
+        	<button type="submit" class="btn btn-primary">
+        		<ion-icon name="alarm-outline" style="margin-bottom: -3px"></ion-icon> Schedule Task
+        	</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% if messages %}
+    {% for message in messages %}
+    <div {% if message.tags %} class="alert alert-{{ message.tags }} " {% endif %}> {{ message }}
+    </div>
+    {% endfor %}
+{% endif %}
+    {% for task in tasks %}
+    &nbsp;
+    <div style="justify-content: center;display: flex;">
+    <div class="card" style="width: 18rem;">
+  	<div class="card-body">
+  		<span class="btn btn-block btn-disabled" style="background: #ccc;cursor: default;" id="tasks">
+  			{% ifequal task.category 0 %}
+  			    <span><ion-icon name="bulb-outline" style="margin-bottom: -3px;"></ion-icon> None</span>
+  			{% endifequal %}
+  			{% ifequal task.category 1 %}
+  			    <span><ion-icon name="school-outline" style="margin-bottom: -3px;"></ion-icon> Study</span>
+  			{% endifequal %}
+  			{% ifequal task.category 2 %}
+  			    <span><ion-icon name="briefcase-outline" style="margin-bottom: -3px;"></ion-icon> Work</span>
+  			{% endifequal %}
+  			{% ifequal task.category 3 %}
+  			    <span><ion-icon name="bicycle-outline" style="margin-bottom: -3px;"></ion-icon> Gym</span>
+  			{% endifequal %}
+  			{% ifequal task.category 4 %}
+  			    <span><ion-icon name="business-outline" style="margin-bottom: -3px;"></ion-icon> Business</span>
+  			{% endifequal %}
+  			{% ifequal task.category 5 %}
+  			    <span><ion-icon name="football-outline" style="margin-bottom: -3px;"></ion-icon> Holiday</span>
+  			{% endifequal %}
+  		</span>
+  		<br/>
+  		<span class="float-right">
+  			<button data-toggle="modal" data-target="#deleteModal{{ task.id }}" class="btn">
+  				<ion-icon name="trash-outline"></ion-icon>
+			</button>
+  		</span>
+    	<h5 class="card-title">{{ task.task_name }}</h5>
+    	<p class="card-text">{{ task.task_detail }}</p>
+    	<hr style="margin: 0;">
+    	<p><ion-icon name="calendar-outline" style="margin-bottom: -2px; "></ion-icon>&nbsp;<time>{{ task.event_date }} | {{ task.event_time }}</time></p>
+  	</div>
+	</div>
+	</div>
+
+<div class="modal fade deleteModals" id="deleteModal{{ task.id }}" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Are you sure?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      	<a href="delete/note/{{ task.id }}" class="btn btn-danger">Yes</a>
+      	&nbsp;
+        <button type="button" class="btn" data-dismiss="modal" aria-label="Close">
+        	No
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+&nbsp;
+    {% empty %}
+    <p>No Events</p>
+    {% endfor %}
+    <script type="text/javascript">
+    	function e(){
+    		var t = new Date();
+  			var d = t.getDate();
+  			var m = t.getMonth()+1; 
+  			var y = t.getFullYear();
+        var dtp = $('#id_event_date');
+        dtp.datepicker
+  			var tm = t.getHours() + ":" + t.getMinutes()
+  			if(d<10) 
+  			{
+  		    	d='0'+d;
+  			}
+  			if(m<10) 
+  			{
+  			    m='0'+m;
+  			} 
+  	    	var ied = document.getElementById('id_event_date')
+  	    	ied.value = y+'-'+m+'-'+d;
+  	    	var iet = document.getElementById('id_event_time')
+  	    	iet.value = tm
+      	}
+      e();
+    	</script>
+{% endblock content %}
